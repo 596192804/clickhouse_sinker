@@ -44,6 +44,7 @@ type CsvParser struct {
 // Parse extract a list of comma-separated values from the data
 func (p *CsvParser) Parse(bs []byte) (metric model.Metric, err error) {
 	r := csv.NewReader(bytes.NewReader(bs))
+	r.LazyQuotes = true //忽略csv字段中间的单双引号
 	r.FieldsPerRecord = len(p.pp.csvFormat)
 	if len(p.pp.delimiter) > 0 {
 		r.Comma = rune(p.pp.delimiter[0])
