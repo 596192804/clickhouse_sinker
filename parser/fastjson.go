@@ -119,6 +119,17 @@ func FastjsonGetInt[T constraints.Signed](v *fastjson.Value, nullable bool, min,
 		val = T(1)
 	case fastjson.TypeFalse:
 		val = T(0)
+	case fastjson.TypeString:
+		strBytes, _ := v.StringBytes()
+		if val2, err := strconv.ParseInt(string(strBytes), 10, 64); err != nil {
+			val = getDefaultInt[T](nullable)
+		} else if val2 < min {
+			val = T(min)
+		} else if val2 > max {
+			val = T(max)
+		} else {
+			val = T(val2)
+		}
 	default:
 		if val2, err := v.Int64(); err != nil {
 			val = getDefaultInt[T](nullable)
@@ -143,6 +154,15 @@ func FastjsonGetUint[T constraints.Unsigned](v *fastjson.Value, nullable bool, m
 		val = T(1)
 	case fastjson.TypeFalse:
 		val = T(0)
+	case fastjson.TypeString:
+		strBytes, _ := v.StringBytes()
+		if val2, err := strconv.ParseUint(string(strBytes), 10, 64); err != nil {
+			val = getDefaultInt[T](nullable)
+		} else if val2 > max {
+			val = T(max)
+		} else {
+			val = T(val2)
+		}
 	default:
 		if val2, err := v.Uint64(); err != nil {
 			val = getDefaultInt[T](nullable)
@@ -160,12 +180,24 @@ func FastjsonGetFloat[T constraints.Float](v *fastjson.Value, nullable bool, max
 		val = getDefaultFloat[T](nullable)
 		return
 	}
-	if val2, err := v.Float64(); err != nil {
-		val = getDefaultFloat[T](nullable)
-	} else if val2 > max {
-		val = T(max)
-	} else {
-		val = T(val2)
+	switch v.Type() {
+	case fastjson.TypeNumber:
+		if val2, err := v.Float64(); err != nil {
+			val = getDefaultFloat[T](nullable)
+		} else if val2 > max {
+			val = T(max)
+		} else {
+			val = T(val2)
+		}
+	case fastjson.TypeString:
+		strBytes, _ := v.StringBytes()
+		if val2, err := strconv.ParseFloat(string(strBytes), 64); err != nil {
+			val = getDefaultFloat[T](nullable)
+		} else if val2 > max {
+			val = T(max)
+		} else {
+			val = T(val2)
+		}
 	}
 	return
 }
@@ -617,7 +649,7 @@ func fjCompatibleInt(v *fastjson.Value) (ok bool) {
 		return
 	}
 	switch v.Type() {
-	case fastjson.TypeTrue, fastjson.TypeFalse, fastjson.TypeNumber:
+	case fastjson.TypeTrue, fastjson.TypeFalse, fastjson.TypeNumber, fastjson.TypeString:
 		ok = true
 	}
 	return
@@ -628,7 +660,7 @@ func fjCompatibleFloat(v *fastjson.Value) (ok bool) {
 		return
 	}
 	switch v.Type() {
-	case fastjson.TypeNumber:
+	case fastjson.TypeNumber, fastjson.TypeString:
 		ok = true
 	}
 	return
