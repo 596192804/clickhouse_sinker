@@ -13,4 +13,8 @@ nacos_cache
 *.p12
 dist
 vendor
-
+kafka_gen_log
+kafka_gen_metric
+kafka_gen_prom
+clickhouse_sinker
+nacos_publish_config
