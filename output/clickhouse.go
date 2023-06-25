@@ -348,23 +348,23 @@ func (c *ClickHouse) initSeriesSchema(conn clickhouse.Conn) (err error) {
 		strings.Join(serDimsQuoted, ","))
 
 	// Check distributed series table
-	if chCfg := &c.cfg.Clickhouse; chCfg.Cluster != "" {
-		withDistTable := false
-		info, e := c.getDistTbls(c.seriesTbl)
-		if e != nil {
-			return e
-		}
-		for _, i := range info {
-			c.distSeriesTbls = append(c.distSeriesTbls, i.name)
-			if i.cluster == c.cfg.Clickhouse.Cluster {
-				withDistTable = true
-			}
-		}
-		if !withDistTable {
-			err = errors.Newf("Please create distributed table for %s in cluster '%s'.", c.seriesTbl, c.cfg.Clickhouse.Cluster)
-			return
-		}
-	}
+	// if chCfg := &c.cfg.Clickhouse; chCfg.Cluster != "" {
+	// 	withDistTable := false
+	// 	info, e := c.getDistTbls(c.seriesTbl)
+	// 	if e != nil {
+	// 		return e
+	// 	}
+	// 	for _, i := range info {
+	// 		c.distSeriesTbls = append(c.distSeriesTbls, i.name)
+	// 		if i.cluster == c.cfg.Clickhouse.Cluster {
+	// 			withDistTable = true
+	// 		}
+	// 	}
+	// 	if !withDistTable {
+	// 		err = errors.Newf("Please create distributed table for %s in cluster '%s'.", c.seriesTbl, c.cfg.Clickhouse.Cluster)
+	// 		return
+	// 	}
+	// }
 
 	sq, _ := SeriesQuotas.LoadOrStore(c.GetSeriesQuotaKey(),
 		&model.SeriesQuota{
@@ -425,23 +425,23 @@ func (c *ClickHouse) initSchema() (err error) {
 	util.Logger.Info(fmt.Sprintf("Prepare sql=> %s", c.prepareSQL), zap.String("task", c.taskCfg.Name))
 
 	// Check distributed metric table
-	if chCfg := &c.cfg.Clickhouse; chCfg.Cluster != "" {
-		withDistTable := false
-		info, e := c.getDistTbls(c.TableName)
-		if e != nil {
-			return e
-		}
-		for _, i := range info {
-			c.distMetricTbls = append(c.distMetricTbls, i.name)
-			if i.cluster == c.cfg.Clickhouse.Cluster {
-				withDistTable = true
-			}
-		}
-		if !withDistTable {
-			err = errors.Newf("Please create distributed table for %s in cluster '%s'.", c.TableName, c.cfg.Clickhouse.Cluster)
-			return
-		}
-	}
+	// if chCfg := &c.cfg.Clickhouse; chCfg.Cluster != "" {
+	// 	withDistTable := false
+	// 	info, e := c.getDistTbls(c.TableName)
+	// 	if e != nil {
+	// 		return e
+	// 	}
+	// 	for _, i := range info {
+	// 		c.distMetricTbls = append(c.distMetricTbls, i.name)
+	// 		if i.cluster == c.cfg.Clickhouse.Cluster {
+	// 			withDistTable = true
+	// 		}
+	// 	}
+	// 	if !withDistTable {
+	// 		err = errors.Newf("Please create distributed table for %s in cluster '%s'.", c.TableName, c.cfg.Clickhouse.Cluster)
+	// 		return
+	// 	}
+	// }
 	return nil
 }
 
